@@ -5,7 +5,7 @@ class Background(pygame.sprite.Sprite):
         super().__init__()
         # Load the background image
         self.sky_surface = pygame.image.load('src/assets/sprites/Background/Background.png').convert()
-        self.sky_surface = pygame.transform.scale(self.sky_surface, (800, 600))
+        self.sky_surface = pygame.transform.scale(self.sky_surface, (1440, 900))
    
         # Optionally scale the image to fit the screen or desired size
         # For example, to scale to 800x600, you can uncomment the next line
