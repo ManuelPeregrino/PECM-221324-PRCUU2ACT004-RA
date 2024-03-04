@@ -5,6 +5,8 @@ from views.belts import Belt
 from views.square import Square
 from data.background import Background
 from views.floor import Floor
+from controllers.music import MusicPlayer
+
 class Main:
 
     pygame.init()
@@ -16,6 +18,8 @@ class Main:
 
     def __init__(self):
 
+        self.music_player = MusicPlayer('src/assets/sounds/Talking.ogg')
+        self.music_player.start()  # Start music playback
         self.moving_sprites = pygame.sprite.Group()
         self.create_belts()
         self.direction = 0
@@ -25,6 +29,7 @@ class Main:
         self.moving_sprites.add(self.square)
         self.moving_sprites.add(self.square2)
         self.background = Background()
+
 
     def create_belts(self):
         # Create belts and add them to the moving_sprites group
@@ -53,6 +58,7 @@ class Main:
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.music_player.stop() 
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
