@@ -19,7 +19,7 @@ class Belt(pygame.sprite.Sprite):
 
     def animate(self):
         self.is_animating = True
-        self.direction=0.5
+        self.direction=1
 
     def stop_animate(self):
         self.is_animating = False
@@ -27,5 +27,7 @@ class Belt(pygame.sprite.Sprite):
 
     def update(self, speed):
         if self.is_animating:
-            self.current_belt = (self.current_belt + speed) % len(Belt.test_conveyor_belt_images)
-            self.image = Belt.test_conveyor_belt_images[int(self.current_belt)]
+            self.current_belt = (self.current_belt + 1)
+            if self.current_belt >= len(Belt.test_conveyor_belt_images):
+                self.current_belt = 0
+            self.image = Belt.test_conveyor_belt_images[self.current_belt]

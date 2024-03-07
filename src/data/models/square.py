@@ -10,10 +10,15 @@ class Square(pygame.sprite.Sprite):
         self.rect.topleft = (pos_x, pos_y)
         self.drop_to_next_level = False
         self.velocity_y = 0  # Initial vertical velocity
-
+        self.update_counter = 0  # Counter to control update frequency
+        self.update_frequency = 10  # Update every 5 frames        
     def update(self, belts, gravity=1):
+        self.update_counter += 1
+        if self.update_counter >= self.update_frequency:
+            self.update_counter = 0
+
         # Apply gravity
-        self.rect.y += self.velocity_y
+            self.rect.y += self.velocity_y
 
         # Check for collision with any belt
         belt_hit_list = pygame.sprite.spritecollide(self, belts, False)
@@ -23,8 +28,9 @@ class Square(pygame.sprite.Sprite):
             self.velocity_y = 0  # Reset vertical velocity
             self.drop_to_next_level = False  # No longer needs to drop
             
-            # Move along with the belt's direction
-            self.rect.x += belt_hit_list[0].direction
+            if self.update_counter == 0:
+                # Move along with the belt's direction
+                self.rect.x += belt_hit_list[0].direction
         else:
             # If not colliding, continue to apply gravity
             self.velocity_y = gravity
