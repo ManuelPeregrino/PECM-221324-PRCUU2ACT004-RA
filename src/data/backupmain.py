@@ -2,11 +2,10 @@ import pygame
 import sys
 
 from models.belt import Belt
+from models.square import Square
 from views.background import Background
 from models.floor import Floor
-from models.walls import Walls
 from controllers.music import MusicPlayer
-from controllers.generator import Generator
 
 class Main:
 
@@ -22,62 +21,36 @@ class Main:
         self.music_player = MusicPlayer('src/assets/sounds/Talking.ogg')
         self.music_player.start()  # Start music playback
         self.moving_sprites = pygame.sprite.Group()
-        self.static_sprites = pygame.sprite.Group()
         self.create_belts()
-        self.create_borders()
         self.direction = 0
         self.current_belt_layer = self.belts_layer_1
-        self.generator = Generator(screen_width=1440)
-
+        self.square = Square(10, 10)
+        self.square2 = Square(100,10)
+        self.moving_sprites.add(self.square)
+        self.moving_sprites.add(self.square2)
         self.background = Background()
 
 
     def create_belts(self):
         # Create belts and add them to the moving_sprites group
-        self.belts_layer_1 = [Belt(x * 30 + 10, 700) for x in range(15)]
-        self.belts_layer_2 = [Belt(x * 30 + 100, 200) for x in range(15)]
-        self.belts_layer_3 = [Belt(x * 30 + 100, 300) for x in range(15)]
-        self.belts_complement_1 = [Belt(x * 30 + 570, 100) for x in range(15)]
-        self.belts_complement_2 = [Belt(x * 30 + 600, 200) for x in range(15)]
-        
-        self.packed_belts = self.belts_layer_1 + self.belts_complement_1+ self.belts_layer_2 + self.belts_complement_2 + self.belts_layer_3
-        
-        for belt in self.packed_belts:
+        self.belts_layer_1 = [Belt(x * 30 + 10, 100) for x in range(30)]
+        self.belts_layer_2 = [Belt(x * 30 + 400, 200) for x in range(30)]
+        self.belts_layer_3 = [Belt(x * 30 + 20, 300) for x in range(30)]
+        self.floor_layer = [Floor(x * 30 + 0, 800) for x in range(50)]
+
+        for belt in self.belts_layer_1 + self.belts_layer_2 + self.belts_layer_3+self.floor_layer:
             self.moving_sprites.add(belt)
-
-    def create_borders(self):
-
-        self.wall_border_left_1 = [Walls(0, y*30+20) for y in range(5)]
-        self.wall_border_left_2 = [Walls(0, y*30+400) for y in range(5)]
-        self.wall_border_left_3 = [Walls(0, y*30+600) for y in range(5)]
-        self.floor_layer = [Floor(x * 30 + 0, 700) for x in range(50)]                 
-        self.packed_borders = self.floor_layer+self.wall_border_left_1+self.wall_border_left_2+self.wall_border_left_3
         
-        for border in self.packed_borders:
-            self.static_sprites.add(border)
-
     def run(self):
         while True:
-
-            new_object = self.generator.update()
-
-            if new_object:
-                self.moving_sprites.add(new_object)
-                # self.static_sprites.add(new_object)
             self.handle_events()
-    
             # Update each belt
-            speed = 1 # Adjust speed as necessary
-
-            for Square in self.moving_sprites:
-                for belt in self.packed_belts:
-                    Square.update(self.packed_belts)
+            speed = 0.4 # Adjust speed as necessary
+            for belt in self.belts_layer_1 + self.belts_layer_2 + self.belts_layer_3+self.floor_layer:
                 belt.update(speed)
-
-
-            self.moving_sprites.draw(self.screen)
-            self.static_sprites.draw(self.screen)
-
+                Square.update(self.square, self.belts_layer_1+self.belts_layer_2+self.belts_layer_3+self.floor_layer)
+                Square.update(self.square2, self.belts_layer_1+self.belts_layer_2+self.belts_layer_3+self.floor_layer)
+   
             self.draw()
             self.clock.tick(60)  # Limit the frame rate to 60 FPS
 
@@ -90,15 +63,15 @@ class Main:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key in [pygame.K_a]:  # Example keys to start animation
-                    for belt in self.packed_belts:
+                    for belt in self.belts_layer_1 + self.belts_layer_2 + self.belts_layer_3:
                         belt.animate()
                         belt.direction=-1
                 if event.key in [pygame.K_d]:  # Example keys to start animation
-                    for belt in self.packed_belts:
+                    for belt in self.belts_layer_1 + self.belts_layer_2 + self.belts_layer_3:
                         belt.animate()
             elif event.type == pygame.KEYUP:
                 if event.key in [pygame.K_a, pygame.K_d]:  # Stop animation when these keys are released
-                    for belt in self.packed_belts:
+                    for belt in self.belts_layer_1 + self.belts_layer_2 + self.belts_layer_3:
                         belt.stop_animate()
 
 
@@ -111,7 +84,6 @@ class Main:
         self.screen.fill((0,0,0))
         self.background.draw(self.screen)
         self.moving_sprites.draw(self.screen)
-        self.static_sprites.draw(self.screen)
         pygame.display.flip()
         
 
